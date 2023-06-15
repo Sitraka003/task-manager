@@ -1,43 +1,65 @@
-type TaskManager = {
-  task: Task|null;
-  title: string|null;
-  action:string;
+import create, { SetState } from 'zustand';
+interface Task {
+  id: string;
+  title: string;
+  completed: boolean;
 }
 
-export const TASK_ACTIONS = {
-  ADD: 'add',
-  SEARCH:"search",
-  DELETE:"delete",
-  UPDATE: "update"
+interface TaskManagerState {
+  tasks: Task[];
+  searchTask: Task[];
+  addTask: (newTask: Task) => void;
+  updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
+  deleteTask: (taskId: string) => void;
+  setSearchTask: (searchText: string) => void;
 }
 
-const useTaskManager = (task: Task|null,title:string|null ,action: string) => {
-  if (action == TASK_ACTIONS.ADD) {
-  }
+
+import create, { SetState } from 'zustand';
+
+interface Task {
+  id: string;
+  title: string;
+  completed: boolean;
 }
+
+interface TaskManagerState {
+  tasks: Task[];
+  searchTask: Task[];
+  addTask: (newTask: Task) => void;
+  updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
+  deleteTask: (taskId: string) => void;
+  setSearchTask: (searchText: string) => void;
+}
+
+const useTaskManager = create<TaskManagerState>((set: SetState<TaskManagerState>) => ({
+  tasks: [],
+  searchTask: [],
+  addTask: (newTask) => {
+    set((state) => ({
+      tasks: [...state.tasks, newTask],
+    }));
+  },
+  updateTask: (taskId, updatedTask) => {
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === taskId ? { ...task, ...updatedTask } : task
+      ),
+    }));
+  },
+  deleteTask: (taskId) => {
+    set((state) => ({
+      tasks: state.tasks.filter((task) => task.id !== taskId),
+    }));
+  },
+  setSearchTask: (searchText) => {
+    set((state) => ({
+      searchTask: state.tasks.filter((task) => task.title.includes(searchText)),
+    }));
+  },
+}));
+
 
 export {
   useTaskManager
 }
-
-type Task = {
-  id: string | null;
-  title: string;
-  description: string;
-}
-
-type TaskStore = {
-  currentTask: Task | null;
-  allTasks: Task[];
-  setAllTasks: (tasks: Task[]) => void;
-};
-
-const taskStore = (set): TaskStore => ({
-  currentTask: null,
-  allTasks: [],
-  setAllTasks: (tasks) => {
-    set((state) => ({
-      userChannels: tasks,
-    }));
-  },
-});
