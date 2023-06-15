@@ -1,5 +1,8 @@
+import { formatDate, timeDifference } from "@/utils";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 /**
   Calculates the time difference between the server time and client time.
@@ -10,11 +13,21 @@ import { useRouter } from "next/router";
 const calculateTimeDifference = (server: Date, client: Date) => {};
 
 
-export default function Home() {
+export default function Home({
+  time,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const moveToTaskManager = () => {
     router.push("/tasks");
   }
+  const [clientTime,setClientTime] = useState(new Date (Date().toString()))
+  const [serverTime,setServerTime] = useState(new Date(time.servertime))
+  const[diff,setDiff] = useState("")
+  useEffect(() => {
+    setClientTime(new Date (Date().toString()))  
+   setDiff(timeDifference(clientTime,serverTime))
+  }, [])
+   
   return (
     <>
       <Head>
@@ -27,15 +40,16 @@ export default function Home() {
         <h1>The easiest exam you will ever find</h1>
         <div>
           {/* Display here the server time (DD-MM-AAAA HH:mm)*/}
+          {}
           <p>
-            Server time:{" "}
+            Server time: {formatDate(serverTime) }
             <span className="serverTime">{/* Replace with the value */}</span>
           </p>
 
           {/* Display here the time difference between the server side and the client side */}
           <p>
             Time diff:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{diff}</span>
           </p>
         </div>
 
@@ -45,4 +59,16 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+
+type ServerTime = {
+  servertime: string
+}
+
+export const getServerSideProps: GetServerSideProps<{
+  time: ServerTime
+}> = async () => {
+  const time = { servertime: Date().toString() }
+  return { props: { time } }
 }
