@@ -6,7 +6,7 @@ const LocalStorageDataProvider = {
     }
     return tasks;
   },
-  createTask : (task:{}){
+  createTask : (task:{})=>{
     localStorage.setItem(task?.id, JSON.stringify(task))
   }
 }

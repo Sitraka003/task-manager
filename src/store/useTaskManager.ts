@@ -1,4 +1,4 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
 //Create store with zustand
 const useTask = create((set)=>({

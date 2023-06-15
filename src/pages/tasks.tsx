@@ -1,3 +1,4 @@
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTaskManager } from '@/store/useTaskManager';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
@@ -10,6 +11,7 @@ interface Task {
 const TaskManager = () => {
   const createTaskRef = useRef("");
   const [toPrint, setToPrint] = useState([]);
+  const { getTasks, createTask } = useLocalStorage();
 
    const {
      tasks,
@@ -27,6 +29,7 @@ const TaskManager = () => {
       title,
       completed: false,
     };
+    createTask(newTask)
     //Keep previous and add the new one
     addTask([...tasks, newTask]);
   };
@@ -39,7 +42,7 @@ const TaskManager = () => {
       }
       return task;
     })
-    updateTask(updatedTasks);
+    updateTask(tasks);
   };
 
   const handleDeleteTask = (taskId: number) => {
