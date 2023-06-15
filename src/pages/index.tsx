@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 /**
   Calculates the time difference between the server time and client time.
@@ -7,14 +8,45 @@ import { useRouter } from "next/router";
   @param {Date} clientTime - The client time.
   @returns {string} The time difference in the format "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds".
 */
-const calculateTimeDifference = (server: Date, client: Date) => {};
+const calculateTimeDifference = (server: Date, client: Date) => {
+  let result = server.getTime() - client.getTime();
+  
+  return result;
+};
 
+export async function getServerSideProps() {
+  const dateFromServer = new Date().toISOString();
 
-export default function Home() {
+  return {
+    props : {
+      serverTime : { time : dateFromServer }
+    }
+  }
+}
+export default function Home({ serverTime }:any) {
+  let timeFromServer = new Date(Date.parse(serverTime?.time));
   const router = useRouter();
+  const [timeDiff, setTimeDiff] = useState();
+
   const moveToTaskManager = () => {
     router.push("/tasks");
   }
+
+
+  function formatTime(date:Date) {
+    const day = date.getUTCDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const secondes = date.getSeconds();
+    
+    return `${day}/${hours}:${minutes}:${secondes}`;
+  }
+
+  useEffect(()=>{
+    let time = calculateTimeDifference(timeFromServer, new Date())
+    setTimeDiff(time)    
+  }, [])
+
   return (
     <>
       <Head>
@@ -29,13 +61,13 @@ export default function Home() {
           {/* Display here the server time (DD-MM-AAAA HH:mm)*/}
           <p>
             Server time:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{formatTime(timeFromServer)}</span>
           </p>
 
           {/* Display here the time difference between the server side and the client side */}
           <p>
-            Time diff:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            Time diff:{ " " }
+            <span className="serverTime">{ timeDiff }</span>
           </p>
         </div>
 
