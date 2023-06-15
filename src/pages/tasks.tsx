@@ -1,6 +1,7 @@
 
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTaskManager } from '@/store/useTaskManager';
-import React, { ChangeEvent, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
 
 interface Task {
   id: number,
@@ -45,6 +46,13 @@ const TaskManager = () => {
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchTask.toLowerCase())
   );
+
+  // integrate useLocalStorage to task
+  const [storedTasks, setStoredTasks] = useLocalStorage('tasks', []);
+
+  useEffect(() => {
+    setStoredTasks(tasks);
+  }, [tasks, setStoredTasks]);
 
   return (
     <div>
